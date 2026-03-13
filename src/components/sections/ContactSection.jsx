@@ -64,7 +64,7 @@ export default function ContactSection() {
   return (
     <section id="contact" className="section-pad" style={{ borderTop: `1px solid ${C.bg.border}` }}>
       <div style={{ maxWidth: "560px", margin: "0 auto", textAlign: "center" }}>
-        <SLabel>// 05 — CONTACTO</SLabel>
+        <SLabel>{"// 05 — CONTACTO"}</SLabel>
         <STitle style={{ marginBottom: "14px" }}>Hablemos</STitle>
         <p style={{ color: C.text.muted, fontSize: "15px", lineHeight: 1.7, marginBottom: "48px" }}>
           ¿Tenés un proyecto en mente o querés charlar? Escribime.

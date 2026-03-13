@@ -12,7 +12,7 @@ export default function BlogSection({ onOpen }) {
   return (
     <section id="blog" className="section-pad" style={{ background: C.bg.surface, borderTop: `1px solid ${C.bg.border}` }}>
       <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-        <SLabel>// 04 — BLOG</SLabel>
+        <SLabel>{"// 04 — BLOG"}</SLabel>
         <div className="blog-header">
           <STitle>Notas & artículos</STitle>
           <CategoryFilter active={ac} onChange={setAc} />

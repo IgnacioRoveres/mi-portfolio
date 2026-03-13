@@ -40,7 +40,7 @@ function ProjectCard({ p, onBlog }) {
 export default function ProjectsSection({ onBlog }) {
   return (
     <section id="projects" className="section-pad" style={{ maxWidth: "1140px", margin: "0 auto" }}>
-      <SLabel>// 03 — PROYECTOS</SLabel>
+      <SLabel>{"// 03 — PROYECTOS"}</SLabel>
       <STitle style={{ marginBottom: "56px" }}>Lo que construí</STitle>
       <div className="section-grid-projects">
         {PROJECTS.map(p => <ProjectCard key={p.id} p={p} onBlog={onBlog} />)}

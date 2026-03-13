@@ -7,7 +7,7 @@ export default function AboutSection() {
     <section id="about" className="section-pad" style={{ maxWidth: "1140px", margin: "0 auto" }}>
       <div className="section-grid-2" style={{ alignItems: "center" }}>
         <div>
-          <SLabel>// 01 — SOBRE MÍ</SLabel>
+          <SLabel>{"// 01 — SOBRE MÍ"}</SLabel>
           <STitle style={{ marginBottom: "28px" }}>
             Código que<br />
             <span style={{ color: C.accent.base }}>importa.</span>
