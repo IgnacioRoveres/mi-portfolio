@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# mi portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Portfolio personal que fui construyendo para tener un lugar donde mostrar mis proyectos y escribir sobre las cosas que aprendo. Incluye blog integrado con soporte para distintas categorías y un formulario de contacto funcional.
 
-## Available Scripts
+El diseño es oscuro con acento rojo carmesí, tipografía monoespaciada para el código y Syne para los títulos. Sin librerías de UI — todo está construido desde cero con React.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 18 + Vite
+- Estilos inline / CSS global propio (sin Tailwind ni styled-components)
+- JetBrains Mono + Syne vía Google Fonts
+- Formspree para el formulario de contacto
+- Sin dependencias de UI externas
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## estructura del proyecto
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+src/
+├── styles/
+│   ├── theme.js            # colores y fuentes como constantes
+│   └── globals.js          # CSS global, animaciones y media queries
+├── data/
+│   ├── personal.js         # nombre, bio, stats, redes sociales
+│   ├── projects.js         # proyectos con tags, estado y link a post
+│   ├── skills.js           # skills con nivel porcentual
+│   └── blog.js             # posts con contenido en markdown básico
+├── hooks/
+│   ├── useTypingEffect.js  # efecto de tipeo animado
+│   ├── useInView.js        # detecta cuando un elemento entra en viewport
+│   └── useActiveSection.js # tracking de sección visible para el navbar
+├── components/
+│   ├── ui/                 # primitivos: SLabel, STitle, Tag, SkillBar, etc.
+│   ├── layout/             # Navbar (con hamburguesa) y Footer
+│   ├── sections/           # Hero, About, Skills, Projects, Contact
+│   └── blog/               # BlogSection, BlogCard, BlogPost, CategoryFilter
+└── pages/
+    ├── HomePage.jsx
+    └── BlogPostPage.jsx
+```
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## instalación
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/tu-usuario/mi-portfolio.git
+cd mi-portfolio
+npm install
+npm run dev
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Para el build de producción:
 
-### `npm run eject`
+```bash
+npm run build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Genera una carpeta `dist/` con archivos estáticos listos para deployar en cualquier hosting.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## personalización
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Todo el contenido está en `src/data/`. No hace falta tocar ningún componente para actualizarlo.
 
-## Learn More
+**`data/personal.js`** → nombre, bio, stats ("3+ años", etc.), links de redes sociales y email
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**`data/projects.js`** → cada proyecto tiene título, descripción, tags, estado (LIVE / WIP / ARCHIVED), líneas de código y opcionalmente un `blogPostId` que lo vincula a un post del blog
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**`data/skills.js`** → nombre de la tecnología, nivel del 0 al 100, y color hex para la barra
 
-### Code Splitting
+**`data/blog.js`** → posts con título, excerpt, categoría, fecha, tiempo de lectura y contenido en un formato de markdown básico (soporta `##`, `###`, bloques de código con triple backtick, `> citas` y `` `código inline` ``)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+**`styles/theme.js`** → si querés cambiar la paleta de colores o las fuentes, todo está centralizado acá
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## formulario de contacto
 
-### Making a Progressive Web App
+Usa [Formspree](https://formspree.io). El endpoint está en `ContactSection.jsx`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```js
+const FORMSPREE_URL = "https://formspree.io/f/xnjgvkvy";
+```
 
-### Advanced Configuration
+Si querés usar tu propia cuenta, reemplazalo con el endpoint que te da Formspree al crear un nuevo form.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## deploy
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Vercel**
+```bash
+npm i -g vercel
+vercel
+```
+Detecta Vite automáticamente, no hace falta configurar nada.
 
-### `npm run build` fails to minify
+**Netlify**
+Conectás el repo desde netlify.com, configurás el build command como `npm run build` y el publish directory como `dist`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**GitHub Pages**
+```bash
+npm install -D gh-pages
+```
+Agregás en `package.json`:
+```json
+"scripts": {
+  "deploy": "gh-pages -d dist"
+}
+```
+Y deployás con:
+```bash
+npm run build && npm run deploy
+```
+
+---
+
+## responsive
+
+Tres breakpoints definidos en `globals.js`:
+
+- `≤ 900px` — grillas pasan a una columna
+- `≤ 768px` — navbar cambia a menú hamburguesa, paddings reducidos
+- `≤ 480px` — botones del hero se apilan, ajustes para pantallas chicas
+
+---
+
+## licencia
+
+MIT — hacé lo que quieras con el código.
