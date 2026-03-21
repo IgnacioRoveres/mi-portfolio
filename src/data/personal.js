@@ -1,5 +1,5 @@
 export const PERSON = {
-  name:      "Tu Nombre",
+  name:      "Ignacio V. Roveres",
   role:      "Full Stack Developer",
   location:  "Argentina 🇦🇷",
   available: true,
