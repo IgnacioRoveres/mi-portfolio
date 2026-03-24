@@ -3,34 +3,133 @@ import { BLOG_POSTS } from "../../data/blog";
 import { Tag } from "../ui";
 import { CatPill } from "./CategoryFilter";
 
+function parseInline(text, FM, C) {
+  const parts = text.split(/(\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g);
+  return parts.map((pt, k) => {
+    if (pt.startsWith("**") && pt.endsWith("**"))
+      return <strong key={k} style={{ color: C.text.primary, fontWeight: 600 }}>{pt.slice(2, -2)}</strong>;
+    if (pt.startsWith("_") && pt.endsWith("_"))
+      return <em key={k} style={{ color: C.text.muted, fontStyle: "italic" }}>{pt.slice(1, -1)}</em>;
+    if (pt.startsWith("`") && pt.endsWith("`"))
+      return <code key={k} style={{ fontFamily: FM.mono, fontSize: "13px", background: C.bg.raised, border: `1px solid ${C.bg.border}`, padding: "1px 7px", borderRadius: "3px", color: C.accent.base }}>{pt.slice(1, -1)}</code>;
+    return pt;
+  });
+}
+
 function renderContent(content) {
   const blocks = content.trim().split(/(```[\s\S]*?```)/g);
+
   return blocks.map((block, i) => {
+
     if (block.startsWith("```")) {
-      const code = block.replace(/```\w*\n?/, "").replace(/```$/, "");
+      const lang = block.match(/^```(\w*)/)?.[1] || "";
+      const code = block.replace(/^```\w*\n?/, "").replace(/```$/, "");
       return (
-        <div key={i} style={{ background: C.bg.surface, border: `1px solid ${C.bg.border}`, borderRadius: "8px", padding: "20px", margin: "24px 0", overflowX: "auto" }}>
-          <pre style={{ fontFamily: FM.mono, fontSize: "13px", lineHeight: 1.8, color: C.text.secondary, margin: 0 }}>{code.trim()}</pre>
+        <div key={i} style={{ margin: "24px 0" }}>
+          {lang && (
+            <div style={{ background: C.bg.border, padding: "4px 16px", borderRadius: "8px 8px 0 0", display: "inline-block", fontFamily: FM.mono, fontSize: "11px", color: C.text.faint, letterSpacing: ".05em" }}>
+              {lang}
+            </div>
+          )}
+          <div style={{ background: C.bg.surface, border: `1px solid ${C.bg.border}`, borderRadius: lang ? "0 8px 8px 8px" : "8px", padding: "20px", overflowX: "auto" }}>
+            <pre style={{ fontFamily: FM.mono, fontSize: "13px", lineHeight: 1.8, color: C.text.secondary, margin: 0 }}>{code.trim()}</pre>
+          </div>
         </div>
       );
     }
-    return block.trim().split("\n").map((line, j) => {
+
+    const lines = block.trim().split("\n");
+
+    const isTable = lines.length >= 3 &&
+      lines[0].trim().startsWith("|") &&
+      lines[1].trim().match(/^\|[\s\-|]+\|$/);
+
+    if (isTable) {
+      const parseRow = (line) =>
+        line.split("|").map(c => c.trim()).filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
+      const headers = parseRow(lines[0]);
+      const bodyLines = lines.slice(2);
+      const rows = bodyLines.filter(l => l.trim().startsWith("|")).map(parseRow);
+      return (
+        <div key={i} style={{ overflowX: "auto", margin: "24px 0" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FM.mono, fontSize: "13px" }}>
+            <thead>
+              <tr>
+                {headers.map((h, k) => (
+                  <th key={k} style={{ textAlign: "left", padding: "10px 16px", borderBottom: `1px solid ${C.bg.border}`, color: C.text.primary, fontWeight: 600, background: C.bg.surface, whiteSpace: "nowrap" }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, ri) => (
+                <tr key={ri} style={{ borderBottom: `1px solid ${C.bg.border}` }}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} style={{ padding: "10px 16px", color: C.text.muted, lineHeight: 1.7 }}>
+                      {parseInline(cell, FM, C)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    const listItems = [];
+    const otherLines = [];
+    let inList = false;
+
+    lines.forEach((line, idx) => {
+      if (line.trim().match(/^[-*] /)) {
+        if (!inList) { inList = true; }
+        listItems.push({ idx, text: line.trim().slice(2) });
+      } else {
+        if (inList) {
+          otherLines.push({ type: "list", items: [...listItems], idx: `list-${idx}` });
+          listItems.length = 0;
+          inList = false;
+        }
+        otherLines.push({ type: "line", text: line, idx });
+      }
+    });
+    if (listItems.length > 0) {
+      otherLines.push({ type: "list", items: [...listItems], idx: `list-end-${i}` });
+    }
+
+    return otherLines.map((entry) => {
+      if (entry.type === "list") {
+        return (
+          <ul key={`${i}-${entry.idx}`} style={{ margin: "12px 0 16px 0", paddingLeft: 0, listStyle: "none" }}>
+            {entry.items.map((item, li) => (
+              <li key={li} style={{ display: "flex", gap: "12px", color: C.text.muted, fontSize: "15px", lineHeight: 1.9, marginBottom: "6px" }}>
+                <span style={{ color: C.accent.base, marginTop: "2px", flexShrink: 0 }}>—</span>
+                <span>{parseInline(item.text, FM, C)}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      }
+
+      const { text: line, idx: j } = entry;
+
       if (line.startsWith("## "))
         return <h2 key={`${i}-${j}`} style={{ fontFamily: FM.display, fontSize: "clamp(18px,3vw,26px)", fontWeight: 700, color: C.text.primary, margin: "40px 0 16px", letterSpacing: "-.02em" }}>{line.slice(3)}</h2>;
+
       if (line.startsWith("### "))
         return <h3 key={`${i}-${j}`} style={{ fontFamily: FM.display, fontSize: "20px", fontWeight: 600, color: "#c8c5d4", margin: "28px 0 10px" }}>{line.slice(4)}</h3>;
+
       if (line.startsWith("> "))
-        return <blockquote key={`${i}-${j}`} style={{ borderLeft: `3px solid ${C.accent.base}`, paddingLeft: "20px", margin: "24px 0", color: C.text.muted, fontStyle: "italic", fontSize: "16px", lineHeight: 1.8 }}>{line.slice(2)}</blockquote>;
+        return <blockquote key={`${i}-${j}`} style={{ borderLeft: `3px solid ${C.accent.base}`, paddingLeft: "20px", margin: "24px 0", color: C.text.muted, fontStyle: "italic", fontSize: "16px", lineHeight: 1.8 }}>{parseInline(line.slice(2), FM, C)}</blockquote>;
+
       if (!line.trim())
         return <div key={`${i}-${j}`} style={{ height: "6px" }} />;
-      const parts = line.split(/(`[^`]+`)/g);
+
       return (
         <p key={`${i}-${j}`} style={{ color: C.text.muted, fontSize: "15px", lineHeight: 1.9, marginBottom: "10px" }}>
-          {parts.map((pt, k) =>
-            pt.startsWith("`")
-              ? <code key={k} style={{ fontFamily: FM.mono, fontSize: "13px", background: C.bg.raised, border: `1px solid ${C.bg.border}`, padding: "1px 7px", borderRadius: "3px", color: C.accent.base }}>{pt.slice(1, -1)}</code>
-              : pt
-          )}
+          {parseInline(line, FM, C)}
         </p>
       );
     });

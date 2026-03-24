@@ -9,7 +9,7 @@ export const PERSON = {
   ],
   stats: [
     { v: "3+", l: "años exp." },
-    { v: "20+", l: "proyectos" },
+    { v: "5+", l: "proyectos" },
     { v: "8+",  l: "tecnologías" },
   ],
   social: {

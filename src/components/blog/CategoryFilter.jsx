@@ -7,12 +7,13 @@ export const CAT_COLORS = {
   opinion:    { bg: "#d9770618", color: "#d97706", border: "#d9770633" },
 };
 
-export const CATS = ["todos", "proyecto", "tecnologia", "opinion"];
+export const CATS = ["todos", "proyecto", "tecnologia", "opinion", "IA"];
 export const CAT_LABELS = {
   todos:      "Todos",
   proyecto:   "Proyectos",
   tecnologia: "Tecnología",
   opinion:    "Opinión",
+  IA:           "IA",
 };
 
 export function CatPill({ cat }) {

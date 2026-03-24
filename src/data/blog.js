@@ -1,10 +1,10 @@
 export const BLOG_POSTS = [
 {
   id:        "stack-cognitivo-aprendizaje-agentico",
-  category:  "ia",
+  category:  "IA",
   readTime:  6,
   date:      "2026-03-24",
-  projectId: null,
+  projectId: 1,
   tags:      ["IA", "Productividad", "NotebookLM", "Obsidian", "Aprendizaje"],
   title:     "Stack Cognitivo: cómo escalar tu aprendizaje con IA agéntica",
   excerpt:   "El consumo pasivo de información tiene un techo. Este es el flujo que uso para procesar en 15 minutos lo que antes me llevaba semanas, conectando NotebookLM, Obsidian y modelos de lenguaje en un pipeline que elimina redundancia y extrae solo lo que todavía no sé.",
