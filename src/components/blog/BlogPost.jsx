@@ -42,18 +42,15 @@ function renderContent(content) {
     const parseRow = (line) =>
       line.split("|").map(c => c.trim()).filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
 
-    // Agrupar líneas en chunks: "line", "list" o "table"
+// Agrupar líneas en chunks: "line", "list" o "table"
     const otherLines = [];
     let listItems = [];
     let tableLines = [];
-    let inList = false; 
-    let inTable = false;  
 
     const flushList = (idx) => {
       if (listItems.length > 0) {
         otherLines.push({ type: "list", items: [...listItems], idx: `list-${idx}` });
         listItems = [];
-        inList = false;
       }
     };
     const flushTable = (idx) => {
@@ -63,7 +60,6 @@ function renderContent(content) {
         otherLines.push({ type: "table", headers, rows, idx: `table-${idx}` });
       }
       tableLines = [];
-      inTable = false;
     };
 
     lines.forEach((line, idx) => {
@@ -72,19 +68,16 @@ function renderContent(content) {
 
       if (isTableRow) {
         flushList(idx);
-        inTable = true;
         tableLines.push(line);
       } else if (isListRow) {
         flushTable(idx);
-        inList = true;
         listItems.push({ idx, text: line.trim().slice(2) });
       } else {
         flushList(idx);
         flushTable(idx);
         otherLines.push({ type: "line", text: line, idx });
       }
-    });
-    flushList("end");
+    });    flushList("end");
     flushTable("end");
 
     return otherLines.map((entry) => {
