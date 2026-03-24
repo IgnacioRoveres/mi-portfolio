@@ -1,99 +1,102 @@
-export const BLOG_POSTS = 
+export const BLOG_POSTS = [
 {
-  id:        "arquitectura-del-aprendizaje-agentico",
+  id:        "stack-cognitivo-aprendizaje-agentico",
   category:  "ia",
   readTime:  6,
   date:      "2026-03-24",
   projectId: null,
-  tags:      ["IA", "Productividad", "NotebookLM", "Obsidian", "Agentes"],
-  title:     "Arquitectura del Aprendizaje Agéntico: Cómo escalar tu intelecto con un Stack Cognitivo",
-  excerpt:   "El modelo tradicional de estudio genera deuda cognitiva: horas invertidas para extraer poco valor real. Acá te muestro cómo armar un stack con NotebookLM, Obsidian y LLMs para convertir meses de investigación en minutos.",
+  tags:      ["IA", "Productividad", "NotebookLM", "Obsidian", "Aprendizaje"],
+  title:     "Stack Cognitivo: cómo escalar tu aprendizaje con IA agéntica",
+  excerpt:   "El consumo pasivo de información tiene un techo. Este es el flujo que uso para procesar en 15 minutos lo que antes me llevaba semanas, conectando NotebookLM, Obsidian y modelos de lenguaje en un pipeline que elimina redundancia y extrae solo lo que todavía no sé.",
   content: `## El problema con cómo aprendemos hoy
 
-Lectura lineal, tutoriales en YouTube a 1.5x, foros fragmentados. El modelo de estudio que heredamos del siglo XX tiene un problema estructural: genera deuda cognitiva. Invertís cientos de horas para retener una fracción del contenido útil.
+La mayoría de los devs aprendemos igual que en 2005: leemos tutoriales lineales, vemos videos y guardamos tabs. El resultado es deuda cognitiva acumulada: horas invertidas para retener un porcentaje mínimo de lo que realmente importa.
 
-El Aprendizaje Agéntico invierte esa ecuación. La IA no estudia por vos; actúa como un socio que filtra la entropía. Lo que antes llevaba semanas de investigación comparativa —tecnologías, herramientas, decisiones de arquitectura— puede resolverse en minutos si sabés cómo armar el flujo.
+La IA no resuelve esto sola. Usada sin estructura, es otro vector de ruido. La clave está en armar un flujo donde cada herramienta cumpla una función específica y no se pisen entre sí.
 
-## Fundamentos que necesitás dominar
+## Los tres conceptos que tenés que dominar antes de empezar
 
-Antes de hablar de herramientas, hay tres conceptos que definen los límites del sistema:
+Antes de hablar de herramientas, hay tres conceptos técnicos que cambian cómo diseñás el sistema:
 
-- **Tokens**: la unidad de medida del esfuerzo computacional. Entender su peso te ayuda a predecir costo y precisión.
-- **Context Window**: la "memoria de trabajo" del modelo. Una ventana amplia (como los 2M de tokens de Gemini) es crítica para procesar documentación extensa sin perder coherencia.
-- **System Prompt**: la instrucción maestra. Bien diseñado, actúa como guardrail de calidad y protege el sistema contra deriva o prompt injection.
+**Tokens**: la unidad de cómputo de los modelos. Entender su peso te ayuda a predecir costo, velocidad y precisión en síntesis largas.
 
-## NotebookLM como extractor de densidad informativa
+**Context window**: la "memoria de trabajo" del modelo. Ventanas grandes (Gemini llega a 2M de tokens) permiten procesar documentación completa sin que el modelo pierda el hilo.
 
-El mayor cuello de botella del aprendizaje es la repetición: leer lo que ya sabés. NotebookLM lo resuelve con *grounding*, obligando al modelo a responder basándose exclusivamente en tus fuentes cargadas.
+**System prompt**: la instrucción maestra que define el comportamiento del modelo para toda la sesión. Bien configurado, actúa como guardrail: mantiene al modelo enfocado y lo protege contra prompt injection accidental.
 
-El flujo es simple:
+Sin tener claro esto, terminás peleando contra la herramienta en lugar de usarla.
 
-1. Ingestás fuentes masivas: PDFs, documentación oficial, transcripciones de YouTube.
-2. La IA filtra el ruido (anécdotas, relleno, muletillas) y extrae solo datos duros.
-3. Hacés preguntas específicas y obtenés síntesis citadas, sin alucinaciones.
+## El flujo en cuatro fases
 
-Un caso concreto: comparar hardware o tecnologías entre decenas de opciones pasa de días a minutos porque el modelo trabaja sobre un corpus acotado y verificable.
+### Fase 1 — Recolección
 
-## Obsidian como base de verdad personal
+Usás **Deep Research** (Gemini o Perplexity) para capturar un ecosistema completo: repositorios, papers, documentación oficial, canales de YouTube enteros. El objetivo es volcar todo en un solo lugar antes de procesar nada.
 
-Tu vault de Obsidian es tu memoria externa. La idea es simple pero poderosa: si el 90% de un libro nuevo ya está cubierto en tus notas, no tiene sentido leerlo completo.
+### Fase 2 — Deduplicación contra tu base de conocimiento
 
-Para aprovechar esto, podés consolidar tu vault en un único archivo de contexto e inyectarlo en NotebookLM. El script básico en Python hace tres cosas:
+Acá entra **Obsidian**. Tu vault es tu memoria externa. Con un script de Python, consolidás todas tus notas en un único archivo de contexto:
 
-```python
+\`\`\`python
+# consolidar_vault.py
 import os
+import re
 
-vault_path = "/ruta/a/tu/vault"
-output_lines = []
+VAULT_PATH = "/ruta/a/tu/vault"
+OUTPUT_FILE = "contexto_usuario.txt"
+EXCLUDE = [".obsidian", "attachments"]
 
-for root, dirs, files in os.walk(vault_path):
-    for file in files:
-        if file.endswith(".md"):
-            filepath = os.path.join(root, file)
-            with open(filepath, "r", encoding="utf-8") as f:
-                content = f.read()
-                # Eliminar frontmatter YAML
-                if content.startswith("---"):
-                    content = content.split("---", 2)[-1].strip()
-                output_lines.append(content)
+def limpiar_frontmatter(texto):
+    return re.sub(r"^---.*?---\n", "", texto, flags=re.DOTALL)
 
-with open("contexto_usuario.txt", "w", encoding="utf-8") as out:
-    out.write("\n\n".join(output_lines))
-```
+notas = []
+for root, dirs, files in os.walk(VAULT_PATH):
+    dirs[:] = [d for d in dirs if d not in EXCLUDE]
+    for f in files:
+        if f.endswith(".md"):
+            with open(os.path.join(root, f), "r") as archivo:
+                contenido = limpiar_frontmatter(archivo.read())
+                notas.append(contenido)
 
-Con ese archivo cargado, la IA detecta tus gaps reales y salta lo que ya dominás.
+with open(OUTPUT_FILE, "w") as salida:
+    salida.write("\n\n---\n\n".join(notas))
+\`\`\`
 
-## El workflow en 4 fases
+Ese \`contexto_usuario.txt\` lo inyectás como fuente en NotebookLM. A partir de ahí, el modelo sabe qué ya sabés y puede centrarse exclusivamente en los gaps.
 
-El sistema completo funciona así:
+### Fase 3 — Grounding
 
-**Fase 1 — Recolección**: capturás ecosistemas completos: repos, libros, docs, videos.
+**NotebookLM** es la pieza crítica de esta fase. A diferencia de chatear con un modelo genérico, NotebookLM obliga a la IA a responder basándose solo en las fuentes que vos cargaste. Esto elimina alucinaciones y te da síntesis verificables.
 
-**Fase 2 — Deduplicación**: la IA compara las fuentes nuevas con tu Obsidian y se enfoca solo en lo que no sabés.
+Caso concreto: comparar tres frameworks o tecnologías que estás evaluando. Cargás la documentación oficial de cada uno, hacés las preguntas de comparación y obtenés una tabla de decisión en minutos, sin que el modelo mezcle información desactualizada de su entrenamiento.
 
-**Fase 3 — Grounding**: generás resúmenes técnicos anclados a fuentes. Sin alucinaciones, sin deriva.
+### Fase 4 — Generación de activos
 
-**Fase 4 — Generación de activos**: exportás el conocimiento destilado a formatos accionables.
+El conocimiento sintetizado se exporta a formatos de aprendizaje activo. Los que más uso:
+
+- **Flashcards para Anki**: le pedís al modelo que tome los conceptos clave y los formatee como pares pregunta/respuesta en CSV. Importás directo.
+- **Resúmenes de audio**: NotebookLM tiene una feature de podcast que convierte las fuentes en diálogo de audio. Útil para consumo asíncrono mientras hacés otra cosa.
+- **Mapas mentales**: exportás la estructura jerárquica del tema como Markdown con indentación, que después abre cualquier herramienta de mindmap.
 
 ## Qué herramienta hace qué
 
-| Herramienta   | Rol principal                          | Limitación real                        |
-|---------------|----------------------------------------|----------------------------------------|
-| NotebookLM    | Extracción y grounding                 | Débil en redacción creativa larga      |
-| Gemini        | Síntesis y redacción a escala          | Riesgo de alucinación sin anclaje      |
-| Claude Code   | Ejecución agéntica y refactorización   | Requiere supervisión en tareas críticas|
+No todas las herramientas son intercambiables. Esta es la división que uso:
 
-El Model Context Protocol (MCP) es lo que conecta estos modelos con el mundo real: tu filesystem, APIs externas, bases de datos. Sin MCP, la IA vive en una caja. Con MCP, puede actuar.
+| Herramienta | Función | Limitación |
+|---|---|---|
+| NotebookLM | Extracción y grounding sobre fuentes | Débil en redacción creativa larga |
+| Gemini | Síntesis de alta escala, primer borrador | Riesgo de alucinación sin anclaje |
+| Claude | Razonamiento, refactorización, código | Requiere supervisión en tareas críticas |
 
-## Los activos que produce el sistema
+Usarlas bien significa no pedirle a Gemini que razone sobre tu código de producción, ni pedirle a NotebookLM que te escriba un artículo desde cero.
 
-El output no es solo conocimiento en tu cabeza. El stack genera:
+## El resultado en números
 
-- **Flashcards para Anki**: tarjetas listas para repetición espaciada, exportadas desde los resúmenes.
-- **Audio de alta calidad**: síntesis de voz sin el ruido de los podcasts genéricos.
-- **Mapas mentales**: visualización jerárquica para comprensión estructural rápida.
+- Investigación de relocalización (impuestos, alquileres, conectividad en múltiples países): de 3 meses a 15 minutos.
+- Comparación de specs técnicas entre decenas de modelos de hardware: 5 minutos.
+- Libros con 90% de overlap con lo que ya tenés en Obsidian: detectados y descartados automáticamente.
 
-Estos activos son reutilizables. Los generás una vez y los consumís en cualquier contexto.
+El cuello de botella ya no es el acceso a la información. Es la capacidad de filtrar y procesar antes de que la información se vuelva obsoleta.
 
-> La ventaja competitiva ya no está en quién tiene acceso a más información, sino en quién la destila más rápido. Conectar tu base de conocimiento a una red neuronal es el primer paso para aprender a la velocidad que exige 2026.`,
+> La ventaja no está en quién tiene acceso a más datos, sino en quién tiene el sistema para destilarlos más rápido.`,
 }
+];
