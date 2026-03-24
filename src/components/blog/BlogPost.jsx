@@ -39,67 +39,83 @@ function renderContent(content) {
     }
 
     const lines = block.trim().split("\n");
+    const parseRow = (line) =>
+      line.split("|").map(c => c.trim()).filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
 
-    const isTable = lines.length >= 3 &&
-      lines[0].trim().startsWith("|") &&
-      lines[1].trim().match(/^\|[\s\-|]+\|$/);
-
-    if (isTable) {
-      const parseRow = (line) =>
-        line.split("|").map(c => c.trim()).filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
-      const headers = parseRow(lines[0]);
-      const bodyLines = lines.slice(2);
-      const rows = bodyLines.filter(l => l.trim().startsWith("|")).map(parseRow);
-      return (
-        <div key={i} style={{ overflowX: "auto", margin: "24px 0" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FM.mono, fontSize: "13px" }}>
-            <thead>
-              <tr>
-                {headers.map((h, k) => (
-                  <th key={k} style={{ textAlign: "left", padding: "10px 16px", borderBottom: `1px solid ${C.bg.border}`, color: C.text.primary, fontWeight: 600, background: C.bg.surface, whiteSpace: "nowrap" }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, ri) => (
-                <tr key={ri} style={{ borderBottom: `1px solid ${C.bg.border}` }}>
-                  {row.map((cell, ci) => (
-                    <td key={ci} style={{ padding: "10px 16px", color: C.text.muted, lineHeight: 1.7 }}>
-                      {parseInline(cell, FM, C)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-
-    const listItems = [];
+    // Agrupar líneas en chunks: "line", "list" o "table"
     const otherLines = [];
+    let listItems = [];
+    let tableLines = [];
     let inList = false;
+    let inTable = false;
+
+    const flushList = (idx) => {
+      if (listItems.length > 0) {
+        otherLines.push({ type: "list", items: [...listItems], idx: `list-${idx}` });
+        listItems = [];
+        inList = false;
+      }
+    };
+    const flushTable = (idx) => {
+      if (tableLines.length >= 3) {
+        const headers = parseRow(tableLines[0]);
+        const rows = tableLines.slice(2).filter(l => l.trim().startsWith("|")).map(parseRow);
+        otherLines.push({ type: "table", headers, rows, idx: `table-${idx}` });
+      }
+      tableLines = [];
+      inTable = false;
+    };
 
     lines.forEach((line, idx) => {
-      if (line.trim().match(/^[-*] /)) {
-        if (!inList) { inList = true; }
+      const isTableRow = line.trim().startsWith("|");
+      const isListRow  = line.trim().match(/^[-*] /);
+
+      if (isTableRow) {
+        flushList(idx);
+        inTable = true;
+        tableLines.push(line);
+      } else if (isListRow) {
+        flushTable(idx);
+        inList = true;
         listItems.push({ idx, text: line.trim().slice(2) });
       } else {
-        if (inList) {
-          otherLines.push({ type: "list", items: [...listItems], idx: `list-${idx}` });
-          listItems.length = 0;
-          inList = false;
-        }
+        flushList(idx);
+        flushTable(idx);
         otherLines.push({ type: "line", text: line, idx });
       }
     });
-    if (listItems.length > 0) {
-      otherLines.push({ type: "list", items: [...listItems], idx: `list-end-${i}` });
-    }
+    flushList("end");
+    flushTable("end");
 
     return otherLines.map((entry) => {
+      if (entry.type === "table") {
+        return (
+          <div key={`${i}-${entry.idx}`} style={{ overflowX: "auto", margin: "24px 0" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: FM.mono, fontSize: "13px" }}>
+              <thead>
+                <tr>
+                  {entry.headers.map((h, k) => (
+                    <th key={k} style={{ textAlign: "left", padding: "10px 16px", borderBottom: `1px solid ${C.bg.border}`, color: C.text.primary, fontWeight: 600, background: C.bg.surface, whiteSpace: "nowrap" }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {entry.rows.map((row, ri) => (
+                  <tr key={ri} style={{ borderBottom: `1px solid ${C.bg.border}` }}>
+                    {row.map((cell, ci) => (
+                      <td key={ci} style={{ padding: "10px 16px", color: C.text.muted, lineHeight: 1.7 }}>
+                        {parseInline(cell, FM, C)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
       if (entry.type === "list") {
         return (
           <ul key={`${i}-${entry.idx}`} style={{ margin: "12px 0 16px 0", paddingLeft: 0, listStyle: "none" }}>
