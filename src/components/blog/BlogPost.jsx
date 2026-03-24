@@ -46,8 +46,8 @@ function renderContent(content) {
     const otherLines = [];
     let listItems = [];
     let tableLines = [];
-    let inList = false;
-    let inTable = false;
+    let inList = false; 
+    let inTable = false;  
 
     const flushList = (idx) => {
       if (listItems.length > 0) {
