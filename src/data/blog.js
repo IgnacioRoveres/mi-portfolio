@@ -1,143 +1,99 @@
-export const BLOG_POSTS = [
-  {
-    id:        "devboard-architecture",
-    category:  "proyecto",
-    readTime:  8,
-    date:      "2026-02-18",
-    projectId: "devboard",
-    tags:      ["React", "WebSockets", "Redis", "Node.js"],
-    title:     "Cómo diseñé la arquitectura real-time de DevBoard",
-    excerpt:   "WebSockets, Redis pub/sub y un sistema de colas que no explota bajo carga. Lo que aprendí construyendo un dashboard en tiempo real.",
-    content: `## El problema
-
-Cuando empecé DevBoard quería algo simple: ver el estado de mis repos en tiempo real. Lo que no esperaba era que "tiempo real" escondía una caja de Pandora de decisiones de arquitectura.
-
-## WebSockets vs SSE vs Polling
-
-La primera decisión fue el protocolo. Estuve entre tres opciones:
-
-\`\`\`
-Polling           → simple, pero ineficiente
-Server-Sent Events → unidireccional, suficiente para muchos casos
-WebSockets        → bidireccional, más complejo, más potente
-\`\`\`
-
-Para DevBoard necesitaba bidireccionalidad, así que elegí WebSockets con \`ws\` en Node.js.
-
-## El problema de escala
-
-Con un solo servidor, WebSockets funciona bien. El problema llega cuando necesitás más de una instancia.
-
-La solución: Redis pub/sub como bus de mensajes.
-
-\`\`\`javascript
-subscriber.subscribe('repo-events', (message) => {
-  const event = JSON.parse(message);
-  broadcastToSubscribers(event);
-});
-\`\`\`
-
-## Lo que aprendí
-
-> La arquitectura real-time no es difícil. Lo difícil es decidir cuánta complejidad estás dispuesto a manejar.`,
-  },
-  {
-    id:        "authkit-passkeys",
-    category:  "proyecto",
-    readTime:  6,
-    date:      "2026-01-30",
-    projectId: "authkit",
-    tags:      ["WebAuthn", "Passkeys", "Security", "UX"],
-    title:     "Implementando Passkeys en 2026: lo que nadie te dice",
-    excerpt:   "WebAuthn ya es mainstream. Pero la UX de passkeys todavía tiene aristas. Acá está lo que tuve que resolver para AuthKit.",
-    content: `## Passkeys están en todas partes… casi
-
-Los navegadores modernos soportan WebAuthn. Los dispositivos también. El problema es que la experiencia del usuario es inconsistente según el OS y el gestor de credenciales.
-
-## El flujo básico
-
-\`\`\`javascript
-const credential = await navigator.credentials.create({
-  publicKey: {
-    challenge: serverChallenge,
-    rp: { name: "AuthKit", id: "authkit.dev" },
-    user: { id: userId, name: userEmail, displayName: userName },
-    pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-  }
-});
-\`\`\`
-
-## Los problemas reales
-
-El mayor dolor de cabeza fue la sincronización cross-device. Un passkey creado en iOS no aparece automáticamente en Android.
-
-La solución: permitir múltiples passkeys por cuenta y ofrecer un fallback explícito siempre visible.
-
-> Implementá passkeys como opción adicional, no como reemplazo de passwords.`,
-  },
-  {
-    id:        "react-server-components-2026",
-    category:  "tecnologia",
-    readTime:  10,
-    date:      "2026-03-01",
-    projectId: null,
-    tags:      ["React", "RSC", "Next.js", "Performance"],
-    title:     "React Server Components en producción: 6 meses después",
-    excerpt:   "Los usé en un proyecto real, con carga real. Acá está el balance honesto — lo bueno, lo malo y lo que todavía no funciona bien.",
-    content: `## El contexto
-
-Migré un dashboard de analytics a React Server Components hace seis meses. No era un proyecto de juguete: 200k usuarios activos, queries complejas, mucho estado compartido.
-
-## Lo que funcionó muy bien
-
-Fetching de datos sin boilerplate. Poder hacer \`await db.query()\` directamente en el componente es genuinamente transformador.
-
-\`\`\`jsx
-async function Dashboard({ userId }) {
-  const data = await db.analytics.findMany({ where: { userId } });
-  return <Charts data={data} />;
-}
-\`\`\`
-
-## Lo que fue complicado
-
-La frontera entre Server y Client Components requiere disciplina. Es fácil romper el árbol de componentes sin darte cuenta.
-
-## Mi veredicto
-
-> RSC valen la pena para apps con mucho data-fetching del lado servidor. Para apps altamente interactivas, la fricción todavía no justifica el salto.`,
-  },
-  {
-    id:        "typescript-strict-mode",
-    category:  "tecnologia",
-    readTime:  5,
-    date:      "2026-02-05",
-    projectId: null,
-    tags:      ["TypeScript", "DX", "Best Practices"],
-    title:     "Por qué activé strict mode en TypeScript y no volví atrás",
-    excerpt:   "Durante un año evité el modo estricto. Después lo activé en un proyecto existente. Fue doloroso. También fue lo mejor que hice.",
-    content: `## El miedo al strict mode
-
-\`strict: true\` en \`tsconfig.json\` activa checks que muchos evitan porque "agregan ruido". Yo también lo evitaba.
-
-## Qué activa
-
-\`\`\`json
+export const BLOG_POSTS = 
 {
-  "strictNullChecks": true,
-  "noImplicitAny": true,
-  "strictFunctionTypes": true
+  id:        "arquitectura-del-aprendizaje-agentico",
+  category:  "ia",
+  readTime:  6,
+  date:      "2026-03-24",
+  projectId: null,
+  tags:      ["IA", "Productividad", "NotebookLM", "Obsidian", "Agentes"],
+  title:     "Arquitectura del Aprendizaje Agéntico: Cómo escalar tu intelecto con un Stack Cognitivo",
+  excerpt:   "El modelo tradicional de estudio genera deuda cognitiva: horas invertidas para extraer poco valor real. Acá te muestro cómo armar un stack con NotebookLM, Obsidian y LLMs para convertir meses de investigación en minutos.",
+  content: `## El problema con cómo aprendemos hoy
+
+Lectura lineal, tutoriales en YouTube a 1.5x, foros fragmentados. El modelo de estudio que heredamos del siglo XX tiene un problema estructural: genera deuda cognitiva. Invertís cientos de horas para retener una fracción del contenido útil.
+
+El Aprendizaje Agéntico invierte esa ecuación. La IA no estudia por vos; actúa como un socio que filtra la entropía. Lo que antes llevaba semanas de investigación comparativa —tecnologías, herramientas, decisiones de arquitectura— puede resolverse en minutos si sabés cómo armar el flujo.
+
+## Fundamentos que necesitás dominar
+
+Antes de hablar de herramientas, hay tres conceptos que definen los límites del sistema:
+
+- **Tokens**: la unidad de medida del esfuerzo computacional. Entender su peso te ayuda a predecir costo y precisión.
+- **Context Window**: la "memoria de trabajo" del modelo. Una ventana amplia (como los 2M de tokens de Gemini) es crítica para procesar documentación extensa sin perder coherencia.
+- **System Prompt**: la instrucción maestra. Bien diseñado, actúa como guardrail de calidad y protege el sistema contra deriva o prompt injection.
+
+## NotebookLM como extractor de densidad informativa
+
+El mayor cuello de botella del aprendizaje es la repetición: leer lo que ya sabés. NotebookLM lo resuelve con *grounding*, obligando al modelo a responder basándose exclusivamente en tus fuentes cargadas.
+
+El flujo es simple:
+
+1. Ingestás fuentes masivas: PDFs, documentación oficial, transcripciones de YouTube.
+2. La IA filtra el ruido (anécdotas, relleno, muletillas) y extrae solo datos duros.
+3. Hacés preguntas específicas y obtenés síntesis citadas, sin alucinaciones.
+
+Un caso concreto: comparar hardware o tecnologías entre decenas de opciones pasa de días a minutos porque el modelo trabaja sobre un corpus acotado y verificable.
+
+## Obsidian como base de verdad personal
+
+Tu vault de Obsidian es tu memoria externa. La idea es simple pero poderosa: si el 90% de un libro nuevo ya está cubierto en tus notas, no tiene sentido leerlo completo.
+
+Para aprovechar esto, podés consolidar tu vault en un único archivo de contexto e inyectarlo en NotebookLM. El script básico en Python hace tres cosas:
+
+```python
+import os
+
+vault_path = "/ruta/a/tu/vault"
+output_lines = []
+
+for root, dirs, files in os.walk(vault_path):
+    for file in files:
+        if file.endswith(".md"):
+            filepath = os.path.join(root, file)
+            with open(filepath, "r", encoding="utf-8") as f:
+                content = f.read()
+                # Eliminar frontmatter YAML
+                if content.startswith("---"):
+                    content = content.split("---", 2)[-1].strip()
+                output_lines.append(content)
+
+with open("contexto_usuario.txt", "w", encoding="utf-8") as out:
+    out.write("\n\n".join(output_lines))
+```
+
+Con ese archivo cargado, la IA detecta tus gaps reales y salta lo que ya dominás.
+
+## El workflow en 4 fases
+
+El sistema completo funciona así:
+
+**Fase 1 — Recolección**: capturás ecosistemas completos: repos, libros, docs, videos.
+
+**Fase 2 — Deduplicación**: la IA compara las fuentes nuevas con tu Obsidian y se enfoca solo en lo que no sabés.
+
+**Fase 3 — Grounding**: generás resúmenes técnicos anclados a fuentes. Sin alucinaciones, sin deriva.
+
+**Fase 4 — Generación de activos**: exportás el conocimiento destilado a formatos accionables.
+
+## Qué herramienta hace qué
+
+| Herramienta   | Rol principal                          | Limitación real                        |
+|---------------|----------------------------------------|----------------------------------------|
+| NotebookLM    | Extracción y grounding                 | Débil en redacción creativa larga      |
+| Gemini        | Síntesis y redacción a escala          | Riesgo de alucinación sin anclaje      |
+| Claude Code   | Ejecución agéntica y refactorización   | Requiere supervisión en tareas críticas|
+
+El Model Context Protocol (MCP) es lo que conecta estos modelos con el mundo real: tu filesystem, APIs externas, bases de datos. Sin MCP, la IA vive en una caja. Con MCP, puede actuar.
+
+## Los activos que produce el sistema
+
+El output no es solo conocimiento en tu cabeza. El stack genera:
+
+- **Flashcards para Anki**: tarjetas listas para repetición espaciada, exportadas desde los resúmenes.
+- **Audio de alta calidad**: síntesis de voz sin el ruido de los podcasts genéricos.
+- **Mapas mentales**: visualización jerárquica para comprensión estructural rápida.
+
+Estos activos son reutilizables. Los generás una vez y los consumís en cualquier contexto.
+
+> La ventaja competitiva ya no está en quién tiene acceso a más información, sino en quién la destila más rápido. Conectar tu base de conocimiento a una red neuronal es el primer paso para aprender a la velocidad que exige 2026.`,
 }
-\`\`\`
-
-## El momento en que cambié de opinión
-
-Encontré un bug en producción que \`strictNullChecks\` hubiera atrapado en compile time. Era un \`undefined\` que llegaba a una función que asumía un valor definido.
-
-## La migración
-
-Activar strict en un proyecto existente grande es una tarea. Mi estrategia: activar flag por flag, no todo junto.
-
-> El dolor de la migración dura días. Los bugs que previene duran para siempre.`,
-  },
-];
