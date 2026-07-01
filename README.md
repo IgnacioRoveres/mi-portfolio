@@ -1,40 +1,120 @@
-# mi-portfolio (migrado a Next.js)
+# mi portfolio
 
-Portfolio personal — migrado de Create React App a **Next.js 15 (App Router)** para resolver problemas de SEO e indexación.
+Portfolio personal de Ignacio Roveres. Muestra proyectos, stack técnico y un blog integrado con soporte para distintas categorías.
 
-## Qué cambió respecto a la versión anterior
+El diseño es oscuro con acento rojo carmesí, tipografía monoespaciada para el código y Syne para los títulos. Sin librerías de UI — todo está construido desde cero con React.
 
-1. **Prerenderizado real (SSG).** Antes el HTML inicial venía vacío (`<div id="root"></div>`) porque todo se renderizaba con JavaScript en el navegador. Google y las previews de LinkedIn/WhatsApp no llegaban a ver el contenido. Ahora cada página se genera como HTML estático en el build.
-2. **URLs reales para cada post del blog.** Antes todo el sitio vivía en una sola URL (`/`) y el "blog" era solo un cambio de estado interno de React — no se podía compartir ni indexar un post específico. Ahora cada post tiene su propia ruta: `/blog/como-construi-este-portfolio`, etc.
-3. **Metadata y Open Graph por página.** Cada post de blog ahora genera su propio `<title>`, descripción y tags OG, en vez de repetir siempre los mismos metadatos genéricos de la home.
-4. **Datos reales en vez de placeholders.** El email de contacto era literalmente `"tu@email.com"` y los links de redes eran `"#"`. Ya están con tus datos reales.
-5. **Cerrajería SyF sumado como proyecto real**, separado y distinguido de los 4 proyectos de práctica (marcados como "EJERCICIO" en la UI).
-6. **Se sacaron 2 links rotos**: `DevBoard` y `AuthKit` apuntaban a posts de blog que no existían.
-7. **Fuentes optimizadas** con `next/font` (se auto-hospedan en el build, no dependen de una request externa a Google Fonts en cada carga).
+---
 
-## Stack
+## stack
 
 - Next.js 15 (App Router) + React 18
-- Mismo sistema de diseño de antes: estilos inline + CSS global propio, JetBrains Mono + Syne
+- Estilos inline / CSS global propio (sin Tailwind ni styled-components)
+- JetBrains Mono + Syne, auto-hospedadas con `next/font`
+- Formspree para el formulario de contacto
 
-## Desarrollo local
+---
+
+## estructura del proyecto
 
 ```
+app/
+├── layout.jsx           # layout raíz, fuentes y metadata base
+├── globals.css           # estilos globales, animaciones y media queries
+├── page.jsx               # home
+└── blog/
+    └── [id]/page.jsx       # página de cada post, generada estáticamente
+components/
+├── ui/                    # primitivos: SLabel, STitle, Tag, SkillBar, etc.
+├── layout/                # Navbar y Footer
+├── sections/              # Hero, About, Skills, Projects, Contact
+├── blog/                  # BlogSection, BlogCard, BlogPost, CategoryFilter
+└── HomeClient.jsx         # composición de la home (navbar + scroll spy)
+data/
+├── personal.js            # nombre, bio, stats, redes sociales
+├── projects.js             # proyectos con tags, estado y link a post
+├── skills.js                # skills con nivel porcentual
+└── blog.js                  # posts con contenido en markdown básico
+hooks/
+├── useTypingEffect.js      # efecto de tipeo animado
+├── useInView.js             # detecta cuando un elemento entra en viewport
+└── useActiveSection.js       # tracking de sección visible para el navbar
+styles/
+└── theme.js                 # colores y fuentes como constantes
+```
+
+---
+
+## instalación
+
+```
+git clone https://github.com/IgnacioRoveres/mi-portfolio.git
+cd mi-portfolio
 npm install
 npm run dev
 ```
 
-## Build de producción
+Para el build de producción:
 
 ```
 npm run build
 ```
 
-## Deploy
+---
 
-Como ya tenés el proyecto conectado en Vercel (`mi-portfolio-ivr.vercel.app`), Vercel debería detectar automáticamente que ahora es un proyecto Next.js al hacer push. Si el build falla o usa configuración vieja de CRA, revisá en el dashboard de Vercel → Settings → Build & Development Settings que el Framework Preset diga **Next.js**.
+## personalización
 
-## Pendiente / sugerido
+Todo el contenido está en `data/`. No hace falta tocar ningún componente para actualizarlo.
 
-- Revisar que el endpoint de Formspree en `components/sections/ContactSection.jsx` sea el tuyo.
-- Considerar escribir un post de blog sobre Cerrajería SyF — es tu mejor caso real y todavía no tiene contenido asociado.
+**`data/personal.js`** → nombre, bio, stats ("1-2 años exp.", etc.), links de redes sociales y email
+
+**`data/projects.js`** → cada proyecto tiene título, descripción, tags, estado (LIVE / WIP / ARCHIVED), tipo (`real` / `practice`), y opcionalmente `liveUrl` (link al sitio en producción) y `blogPostId` (link a un post del blog)
+
+**`data/skills.js`** → nombre de la tecnología, nivel del 0 al 100, y color hex para la barra
+
+**`data/blog.js`** → posts con título, excerpt, categoría, fecha, tiempo de lectura y contenido en un formato de markdown básico (soporta `##`, `###`, bloques de código con triple backtick, `> citas` y `` `código inline` ``)
+
+**`styles/theme.js`** → si querés cambiar la paleta de colores o las fuentes, todo está centralizado acá
+
+---
+
+## formulario de contacto
+
+Usa [Formspree](https://formspree.io). El endpoint está en `components/sections/ContactSection.jsx`:
+
+```
+const FORMSPREE_URL = "https://formspree.io/f/xnjgvkvy";
+```
+
+Si querés usar tu propia cuenta, reemplazalo con el endpoint que te da Formspree al crear un nuevo form.
+
+---
+
+## deploy
+
+**Vercel**
+
+```
+npm i -g vercel
+vercel
+```
+
+Detecta Next.js automáticamente, no hace falta configurar nada.
+
+**Netlify** Conectás el repo desde netlify.com, configurás el build command como `npm run build`.
+
+---
+
+## responsive
+
+Tres breakpoints definidos en `globals.css`:
+
+- `≤ 900px` — grillas pasan a una columna
+- `≤ 768px` — navbar cambia a menú hamburguesa, paddings reducidos
+- `≤ 480px` — botones del hero se apilan, ajustes para pantallas chicas
+
+---
+
+## licencia
+
+MIT — hacé lo que quieras con el código.
