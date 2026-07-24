@@ -22,5 +22,17 @@ export const PROJECTS = [
     blogPostId: null,
     desc:       "Landing page mobile-first para un newsletter de cocina, orientada a conversión: un solo CTA claro, formulario mínimo y copy enfocado en beneficios. Bilingüe (español/inglés) con detección automática del idioma del navegador. HTML, CSS y JavaScript puro, sin dependencias ni frameworks.",
     tags:       ["HTML", "CSS", "JavaScript", "Responsive", "i18n"],
+  },
+  {
+    id:         "velvet-hour",
+    title:      "Velvet Hour — DJ de Bodas",
+    status:     "LIVE",
+    kind:       "practice",
+    color:      "#7c5e9b",
+    lines:      null,
+    liveUrl:    "https://velvethour-demo-2.netlify.app",
+    blogPostId: null,
+    desc:       "Sitio one-page para un DJ de bodas, con estética romántica en tonos lavanda: hero, sección de historia, paquetes con precios editables, línea de tiempo de la noche, galería con lightbox y efecto blanco y negro a color, carrusel de testimonios y formulario de presupuesto. Bilingüe (español/inglés) con detección automática del navegador.",
+    tags:       ["HTML", "CSS", "JavaScript", "Responsive", "i18n", "UI Design"],
   }
 ]
